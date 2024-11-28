@@ -1,6 +1,6 @@
-# Chatroom Django Project
+# Chat room Django Project
 
-This is a simple chatroom application built using Django. The project allows users to create chat rooms, send and receive messages in real-time, and see active users.
+This is a simple chat room application built using Django. The project allows users to create chat rooms, send and receive messages in real-time, and see active users.
 
 ## Features
 - User authentication (Sign up, Login, Logout)
