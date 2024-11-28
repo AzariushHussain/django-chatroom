@@ -1,6 +1,6 @@
 # Chatroom Django Project
 
-This is a simple chatroom application built using Django. The project allows users to create chat rooms, send and receive messages in realtime, and see active users with authentication.
+This is a simple chatroom application built using Django. The project allows users to create chat rooms, send and receive messages in real-time, and see active users.
 
 ## Features
 - User authentication (Sign up, Login, Logout)
@@ -14,7 +14,7 @@ This is a simple chatroom application built using Django. The project allows use
 - Python 3.8+
 - Django 4.0+
 - Channels for real-time WebSocket support
-- 
+  
 ## Installation
    ```bash
    # Clone this repository to your local machine:
