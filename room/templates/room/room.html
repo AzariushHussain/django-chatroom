@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-4">
+    <h2 class="text-center mb-4">Rooms</h2>
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            Available Rooms
+        </div>
+        <div class="card-body">
+            <ul class="list-group">
+                {% for room in rooms %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <a href="{% url 'chat' room.id %}" class="text-decoration-none fw-bold text-primary">
+                                {{ room.name }}
+                            </a>
+                        </div>
+                        {% if room.admin == request.user %}
+                            <form action="{% url 'room' room.id %}" method="post" class="d-inline ms-3">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    Delete
+                                </button>
+                            </form>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="card-footer text-center">
+            <a href="{% url 'create_room' %}" class="btn btn-primary">Create New Room</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

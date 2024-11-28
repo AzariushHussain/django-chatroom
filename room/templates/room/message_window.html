@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-4">
+    <h2 class="text-center mb-4">Chat Room</h2>
+
+    <div class="row">
+        <!-- Chat Window -->
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    Chat Messages
+                </div>
+                <div class="card-body chat-messages" id="chat-messages">
+                    {% for message in messages %}
+                        <div class="mb-2">
+                            <strong class="text-primary">{{ message.user }}</strong>
+                            <small class="text-muted">
+                                {{ message.timestamp|date:"D, d M Y H:i" }}
+                            </small>
+                            <p>{{ message.message }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="card-footer">
+                    <form id="chat-form" class="d-flex">
+                        <input id="chat-message-input" type="text" name="message" class="form-control me-2" placeholder="Type your message here..." required>
+                        <button type="submit" class="btn btn-primary">Send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Users List -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    Live Users
+                </div>
+                <div class="card-body">
+                    <ul id="user-list" class="list-group">
+                        <!-- Live users will be dynamically added here -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    const roomID = "{{ room.id }}"; // Escape the room ID properly for JS
+    const chatSocket = new WebSocket(`ws://${window.location.host}/ws/room/${roomID}/`);
+
+    // Store the list of live users
+    const liveUsers = new Set();
+
+    // Receive message from WebSocket
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+
+        if (data.type === 'connection_established') {
+            if (data.live_users) {
+                data.live_users.forEach(user => liveUsers.add(user));
+                updateLiveUsers();
+            }
+        }
+
+        if (data.type === 'chat_message') {
+            const chatMessages = document.getElementById('chat-messages');
+            const newMessage = document.createElement('div');
+            newMessage.classList.add('mb-2');
+            const messageTime = new Date().toLocaleString(); // Local date and time
+            newMessage.innerHTML = `
+                <strong class="text-primary">${data.user}</strong>
+                <small class="text-muted">${messageTime}</small>
+                <p>${data.message}</p>
+            `;
+            chatMessages.appendChild(newMessage);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        if (data.type === 'user_joined') {
+            liveUsers.add(data.user);
+            updateLiveUsers();
+        }
+
+        if (data.type === 'user_left') {
+            liveUsers.delete(data.user);
+            updateLiveUsers();
+        }
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    document.getElementById('chat-form').onsubmit = function(e) {
+        e.preventDefault();
+        const messageInput = document.getElementById('chat-message-input');
+        const message = messageInput.value.trim();
+        if (message) {
+            chatSocket.send(JSON.stringify({ message: message }));
+            messageInput.value = '';
+        }
+    };
+
+    function updateLiveUsers() {
+        const userList = document.getElementById('user-list');
+        userList.innerHTML = '';
+        liveUsers.forEach(user => {
+            const li = document.createElement('li');
+            li.textContent = user;
+            li.className = 'list-group-item';
+            userList.appendChild(li);
+        });
+    }
+</script>
+
+<style>
+    .chat-messages {
+        height: 400px; 
+        overflow-y: auto; 
+        border: 1px solid #ddd;
+    }
+</style>
+{% endblock %}

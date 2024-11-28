@@ -1,0 +1,62 @@
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.so
+*.dylib
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.db
+*.sqlite3
+*.log
+*.pot
+*.py[cod]
+*.pyo
+*.pyd
+
+# Django
+*.log
+*.pot
+*.pyc
+*.sqlite3
+*.db
+*.bak
+*.swp
+
+# Virtual Environment
+venv/
+env/
+.venv/
+.env/
+*.env
+
+# PyCharm
+.idea/
+
+# VSCode
+.vscode/
+
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Coverage
+.coverage
+coverage.xml
+*.cover
+*.py,cover
+
+# Testing
+nosetests.xml
+test_*.xml
+coverage/
+
+# Local config
+local_settings.py
