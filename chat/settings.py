@@ -129,7 +129,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 ASGI_APPLICATION = "chat.asgi.application"
 
 LOGIN_REDIRECT_URL = '/' 
-LOGOUT_REDIRECT_URL = '/user/login/' 
+LOGOUT_REDIRECT_URL = '/user/login/'
+LOGIN_URL = '/user/login/' 
 
 
 # In-Memory Channel Layer for development
