@@ -49,12 +49,20 @@
 
 <script type="text/javascript">
     const roomID = "{{ room.id }}"; // Escape the room ID properly for JS
-    const chatSocket = new WebSocket(`ws://${window.location.host}/ws/room/${roomID}/`);
+    const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+    const chatSocket = new WebSocket(`${protocol}${window.location.host}/ws/room/${roomID}/`);
 
     // Store the list of live users
     const liveUsers = new Set();
 
-    // Receive message from WebSocket
+    // Escape HTML to prevent XSS attacks
+    function escapeHTML(str) {
+        const div = document.createElement('div');
+        div.appendChild(document.createTextNode(str));
+        return div.innerHTML;
+    }
+
+    // Handle incoming messages
     chatSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
 
@@ -71,9 +79,9 @@
             newMessage.classList.add('mb-2');
             const messageTime = new Date().toLocaleString(); // Local date and time
             newMessage.innerHTML = `
-                <strong class="text-primary">${data.user}</strong>
-                <small class="text-muted">${messageTime}</small>
-                <p>${data.message}</p>
+                <strong class="text-primary">${escapeHTML(data.user)}</strong>
+                <small class="text-muted">${escapeHTML(messageTime)}</small>
+                <p>${escapeHTML(data.message)}</p>
             `;
             chatMessages.appendChild(newMessage);
             chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -90,10 +98,15 @@
         }
     };
 
+    // Reconnect on socket closure
     chatSocket.onclose = function(e) {
-        console.error('Chat socket closed unexpectedly');
+        console.error('Chat socket closed unexpectedly. Reconnecting in 5 seconds...');
+        setTimeout(() => {
+            location.reload(); // Reload to reconnect
+        }, 5000);
     };
 
+    // Send message on form submit
     document.getElementById('chat-form').onsubmit = function(e) {
         e.preventDefault();
         const messageInput = document.getElementById('chat-message-input');
@@ -104,12 +117,13 @@
         }
     };
 
+    // Update live users list
     function updateLiveUsers() {
         const userList = document.getElementById('user-list');
         userList.innerHTML = '';
         liveUsers.forEach(user => {
             const li = document.createElement('li');
-            li.textContent = user;
+            li.innerHTML = `<span class="text-success">●</span> ${escapeHTML(user)}`;
             li.className = 'list-group-item';
             userList.appendChild(li);
         });
@@ -118,9 +132,28 @@
 
 <style>
     .chat-messages {
-        height: 400px; 
-        overflow-y: auto; 
+        height: 400px;
+        overflow-y: auto;
         border: 1px solid #ddd;
+        padding: 10px;
+        background-color: #f9f9f9;
+    }
+
+    .chat-messages div:nth-child(even) {
+        background-color: #e9ecef;
+        padding: 5px;
+        border-radius: 5px;
+    }
+
+    .list-group-item {
+        display: flex;
+        align-items: center;
+    }
+
+    .text-success {
+        font-size: 12px;
+        margin-right: 5px;
     }
 </style>
+
 {% endblock %}
