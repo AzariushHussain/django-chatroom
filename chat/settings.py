@@ -146,3 +146,9 @@ ALLOWED_HOSTS = [
     "django-chatroom-production.up.railway.app"
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://django-chatroom-production.up.railway.app"
+]
+
+APPEND_SLASH = False
+
