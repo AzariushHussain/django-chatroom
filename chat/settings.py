@@ -140,4 +140,9 @@ CHANNEL_LAYERS = {
 }
 
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    "django-chatroom-production.up.railway.app"
+]
+
